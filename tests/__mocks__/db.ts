@@ -9,4 +9,20 @@ export const db = factory({
     id: primaryKey(Number),
     name: String,
   },
+  pullRequests: {
+    id: primaryKey(Number),
+    head: {
+      sha: String,
+    },
+    author_association: String,
+  },
+  ci: {
+    id: primaryKey(Number),
+    conclusion: String,
+    status: String,
+  },
+  reviews: {
+    id: primaryKey(Number),
+    state: String,
+  },
 });

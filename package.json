@@ -1,7 +1,7 @@
 {
-  "name": "plugin-template",
+  "name": "@ubiquibot/automated-merging",
   "version": "1.0.0",
-  "description": "Ubiquibot plugin template repository with TypeScript support.",
+  "description": "Automatically merge pull-requests.",
   "author": "Ubiquity DAO",
   "license": "MIT",
   "main": "src/worker.ts",
@@ -32,9 +32,14 @@
     "@octokit/rest": "20.1.1",
     "@octokit/webhooks": "13.2.7",
     "@sinclair/typebox": "0.32.33",
-    "@supabase/supabase-js": "2.43.5",
+    "@ubiquity-dao/ubiquibot-logger": "1.2.0",
     "dotenv": "16.4.5",
-    "typebox-validators": "0.3.5"
+    "ms": "2.1.3",
+    "reflect-metadata": "0.2.2",
+    "sqlite3": "5.1.7",
+    "ts-retry": "4.2.5",
+    "typebox-validators": "0.3.5",
+    "typeorm": "0.3.20"
   },
   "devDependencies": {
     "@commitlint/cli": "19.3.0",
@@ -45,6 +50,7 @@
     "@eslint/js": "9.5.0",
     "@jest/globals": "29.7.0",
     "@mswjs/data": "0.16.1",
+    "@types/ms": "0.7.34",
     "@types/node": "20.14.5",
     "cspell": "8.9.0",
     "eslint": "9.5.0",
@@ -58,6 +64,7 @@
     "jest-md-dashboard": "0.8.0",
     "knip": "5.21.2",
     "lint-staged": "15.2.7",
+    "msw": "2.3.1",
     "npm-run-all": "4.1.5",
     "prettier": "3.3.2",
     "ts-jest": "29.1.5",

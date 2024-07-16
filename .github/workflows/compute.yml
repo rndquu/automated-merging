@@ -1,4 +1,4 @@
-name: "the name of the plugin"
+name: "Automated Merging"
 
 on:
   workflow_dispatch:
@@ -16,29 +16,80 @@ on:
       ref:
         description: "Ref"
 
+# Limits to one job at a time
+#concurrency:
+#  group: ${{ github.workflow }}
+
+
 jobs:
   compute:
-    name: "plugin name"
+    name: "Automated Merging"
     runs-on: ubuntu-latest
     permissions: write-all
-    env:
-      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-      SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: setup node
+      - name: Setup node
         uses: actions/setup-node@v4
         with:
           node-version: "20.10.0"
 
-      - name: install dependencies
-        run: yarn
+      - name: Install dependencies
+        run: yarn install --immutable --immutable-cache --check-cache
 
-      - name: execute directive
+      - run: ${{ toJSON(inputs) }}
+        shell: cat {0}
+
+      - name: Execute directive
         run: npx tsx ./src/main.ts
-        id: plugin-name
+        id: automated-merging
+
+      # Will try to upload the changes made within the DB during the run.
+      # If all tries fail, an artifact containing the db is uploaded.
+      - name: Commit and Push DB updates with Retry
+        id: commit_and_push
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git config --global pull.rebase false
+          git add database/sql.db
+
+          attempts=0
+          max_attempts=10
+          success=false
+
+          while [ $attempts -lt $max_attempts ]; do
+            if [ -n "$(git diff-index --cached --name-only HEAD)" ]; then
+              if git commit -m "chore: [skip ci] updated database"; then
+                git pull -X ours
+                if git push origin main; then
+                  success=true
+                  break
+                fi
+              else
+                echo "Commit failed, retrying..."
+              fi
+            else
+              echo "No changes to commit"
+              success=true
+              break
+            fi
+            attempts=$((attempts + 1))
+            echo "Attempt $attempts/$max_attempts failed, retrying in 10 seconds..."
+            sleep 10
+          done
+
+          if [ "$success" = false ]; then
+            echo "Failed to commit and push changes after $max_attempts attempts" | tee failure.log
+            exit 1
+          fi
         env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Failure Log
+        if: steps.commit_and_push.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+           name: sql.db
+           path: database/sql.db

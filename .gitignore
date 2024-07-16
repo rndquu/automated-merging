@@ -15,3 +15,5 @@ junit.xml
 cypress/screenshots
 script.ts
 .wrangler
+test-dashboard.md
+database/tests/*

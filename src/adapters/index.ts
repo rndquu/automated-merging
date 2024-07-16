@@ -1,17 +1,11 @@
-import { SupabaseClient } from "@supabase/supabase-js";
-import { Context } from "../types/context";
-import { Access } from "./supabase/helpers/access";
-import { User } from "./supabase/helpers/user";
-import { Label } from "./supabase/helpers/label";
-import { Super } from "./supabase/helpers/supabase";
+import { DataSource } from "typeorm";
+import { Context } from "../types";
+import { PullRequestAdapter } from "./sqlite/helpers/pull-request-adapter";
 
-export function createAdapters(supabaseClient: SupabaseClient, context: Context) {
+export function createAdapters(sqlClient: DataSource, context: Context) {
   return {
-    supabase: {
-      access: new Access(supabaseClient, context),
-      user: new User(supabaseClient, context),
-      label: new Label(supabaseClient, context),
-      super: new Super(supabaseClient, context),
+    sqlite: {
+      pullRequest: new PullRequestAdapter(sqlClient, context),
     },
   };
 }

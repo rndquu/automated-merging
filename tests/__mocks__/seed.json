@@ -1,0 +1,28 @@
+{
+  "pullRequests": [
+    {
+      "id": 1,
+      "head": {
+        "sha": "1"
+      },
+      "author_association": "MEMBER"
+    }
+  ],
+  "ci": [
+    {
+      "id": 1,
+      "conclusion": "success",
+      "status": "completed"
+    }
+  ],
+  "reviews": [
+    {
+      "id": 1,
+      "state": "APPROVED"
+    },
+    {
+      "id": 2,
+      "state": "APPROVED"
+    }
+  ]
+}
